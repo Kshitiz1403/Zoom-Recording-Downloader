@@ -8,9 +8,17 @@ fs.createReadStream(csvPath)
     .pipe(csv({}))
     .on('data', (data) => { results.push(data) })
     .on('end', () => {
+        issuesIdentifier()
         rename()
     })
 
+const issuesIdentifier = () => {
+    results.forEach(item => {
+        if (!item.hasOwnProperty('Last Accessed')) {
+            console.log("There might be error renaming- ", `"${item['﻿Topic']}"`)
+        }
+    })
+}
 const rename = () => {
     const meetTimeHandler = (fileTime, fileName) => {
         results.forEach(item => {
