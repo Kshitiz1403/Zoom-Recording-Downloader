@@ -22,4 +22,4 @@ The recordings will be renamed to their respective titles in the **recordings** 
 
 Currently the recordings have to be downloaded manually, but automated recordings download will be avaialble in the future. 
 
-Files containing `""` cannot be renamed to their respective titles due to the limitations of  [csv-parser](https://github.com/mafintosh/csv-parser/issues/70)
+Files containing `""` cannot be renamed to their respective titles due to the limitations of  [csv-parser](https://github.com/mafintosh/csv-parser/issues/70) although warnings will be logged for such files.
