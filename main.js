@@ -15,7 +15,7 @@ fs.createReadStream(csvPath)
 const issuesIdentifier = () => {
     results.forEach(item => {
         if (!item.hasOwnProperty('Last Accessed')) {
-            console.log("There might be error renaming- ", `"${item['﻿Topic']}"`)
+            console.log('\x1b[33m%s\x1b[0m', `There might be error renaming- "${item['﻿Topic']}"`)
         }
     })
 }
@@ -29,7 +29,7 @@ const rename = () => {
             if (fileTime == startTimeWithoutSecond) {
                 let title = item['﻿Topic']
                 let extension = fileName.match(/\.[0-9a-z]+$/i)[0]
-                let dateTime = fileName.slice(0,11)
+                let dateTime = fileName.slice(0, 11)
                 fs.rename(`${recordingsDir}/${fileName}`, `${recordingsDir}/${title}_${dateTime}${extension}`, (err) => { })
             }
         });
@@ -40,7 +40,7 @@ const rename = () => {
             fileTime = fileNameTimeHandler(file)
             meetTimeHandler(fileTime, file)
         });
-        console.log("Rename Successful!")
+        console.log('\x1b[32m%s\x1b[0m', `Rename Successful!`)
     });
 }
 
