@@ -29,7 +29,8 @@ const rename = () => {
             if (fileTime == startTimeWithoutSecond) {
                 let title = item['﻿Topic']
                 let extension = fileName.match(/\.[0-9a-z]+$/i)[0]
-                fs.rename(`${recordingsDir}/${fileName}`, `${recordingsDir}/${title}.${extension}`, (err) => { })
+                let dateTime = fileName.slice(0,11)
+                fs.rename(`${recordingsDir}/${fileName}`, `${recordingsDir}/${title}_${dateTime}${extension}`, (err) => { })
             }
         });
     }
