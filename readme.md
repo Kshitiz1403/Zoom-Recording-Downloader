@@ -53,6 +53,7 @@ Click on install or copy the installation link and paste it in the browser.
 After successful authorization, all the recordings from 30 days will start getting downloaded in the `downloads` folder in the root directory.
 
 The name of the files will be the same as the meeting topic of that recording.
+
 Console messages will be shown for  the remaining downloads.
 
 
