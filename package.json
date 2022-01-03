@@ -1,14 +1,21 @@
 {
   "name": "zoom-recording-manager",
   "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
+  "description": "App for downloading the cloud recordings on Zoom using Oauth2 Client ID and Secret to create an OAuth2 token used to call the Zoom API.",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
-  "author": "",
+  "author": "Kshitiz Agrawal",
   "license": "ISC",
   "dependencies": {
-    "csv-parser": "^3.0.0"  
+    "csv-parser": "^3.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "request": "^2.88.0"  
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
