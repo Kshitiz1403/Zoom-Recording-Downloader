@@ -109,4 +109,4 @@ app.get('/', (req, res) => {
     res.redirect('https://zoom.us/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL)
 })
 
-app.listen(4000, () => console.log(`Zoom Hello World app listening at PORT: 4000`))
+app.listen(4000, () => console.log(`Zoom Recording Manager app is listening at PORT: 4000`))
