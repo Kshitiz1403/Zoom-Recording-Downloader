@@ -1,5 +1,16 @@
 # Zoom Recording Manager
 
+Zoom only provides 1GB of space for cloud recordings on their base paid plan. This might be not sufficient for most users and they might want to download the recordings to their local machine. 
+
+The user can either manually download those meetings from the Zoom's website or can use the developers API to access them.
+
+The major problem with downloading files from the website is that it gets renamed to the Pacific time when the meeting was started for example `GMT20211218-040016_Recording_640x360.mp4`. This might be useful to some users but the most users would want the meetings to be renamed as the meeting topic.
+
+If the user wants to access the Cloud Recordings via Zoom API, this is certainly difficult as Zoom uses OAuth 2.0 for authentication. 
+
+The app allows you to download all the recordings from the last 30 days (limitations imposed by Zoom) or rename already download files to their respective meeting topics.
+
+
 ### Installation
 To use Zoom Recording Manager, run:
 
@@ -53,7 +64,6 @@ Click on install or copy the installation link and paste it in the browser.
 After successful authorization, all the recordings from 30 days will start getting downloaded in the `downloads` folder in the root directory.
 
 The name of the files will be the same as the meeting topic of that recording.
-
 Console messages will be shown for  the remaining downloads.
 
 
