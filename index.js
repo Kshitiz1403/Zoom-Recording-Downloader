@@ -2,6 +2,7 @@
 require('dotenv/config')
 let fs = require('fs')
 const localtunnel = require("localtunnel")
+const open = require("open")
 
 let redirect_URL
 
@@ -34,6 +35,9 @@ const openTunnel = async () => {
             process.exit(1)
         }
         console.log(account)
+
+        open(redirect_URL)
+        
         readline.close()
     })
 }
