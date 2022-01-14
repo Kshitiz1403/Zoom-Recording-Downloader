@@ -44,6 +44,34 @@ const openTunnel = async () => {
 
 openTunnel()
 
+const dateHandler = (zFormat) => {
+    // 2022-01-08T03:55:18Z  -> 2022-01-08-9_25_18
+    let date = new Date(zFormat)
+    let onlyDate = date.getDate().toString()
+    if (onlyDate.length < 2) {
+        onlyDate = '0' + onlyDate
+    }
+
+    let month = (date.getMonth() + 1).toString()
+    if (month.length < 2) {
+        month = '0' + month
+    }
+
+    let year = date.getFullYear()
+
+    const timeHandler = (time) => {
+        let hour = time.slice(0, 2)
+        let min = time.slice(3, 5)
+        let sec = time.slice(6, 8)
+        return `${hour}_${min}_${sec}`
+    }
+    let time = date.toTimeString()
+    time = timeHandler(time)
+
+    date = onlyDate + '-' + month + '-' + year + '-' + time
+    return date
+}
+
 // Use the request module to make HTTP requests from Node
 const request = require('request')
 
@@ -98,7 +126,8 @@ app.get('/', (req, res) => {
                             for (const meeting of meetings) {
                                 for (const file of meeting.recording_files) {
                                     let fileURL = `${file.download_url}?access_token=${access_token}`
-                                    let fileName = `${meeting.topic}.${file.file_extension}`
+                                    let fileDate = dateHandler(meeting.start_time)
+                                    let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
                                     downloadStatus = { ...downloadStatus, [fileName]: false }
                                     let directory = "./downloads"
                                     if (!fs.existsSync(directory)) {
