@@ -4,18 +4,38 @@ let fs = require('fs')
 const localtunnel = require("localtunnel")
 
 let redirect_URL
-const openTunnel =async () =>{
-    const tunnel = await localtunnel({ port: 4000, subdomain:"zoomapp" });
-  
+
+let account
+
+const openTunnel = async () => {
+    const tunnel = await localtunnel({ port: 4000, subdomain: "zoomapp" });
+
     // the assigned public url for your tunnel
-    // i.e. https://abcdefgjhij.localtunnel.me
-    redirect_URL =  tunnel.url;
+    redirect_URL = tunnel.url;
     console.log(tunnel.url)
-  
-    tunnel.on('close', () => {
-        console.log("tunnel closed")
-      // tunnels are closed
-    });
+
+    const readline = require('readline').createInterface({
+        input: process.stdin,
+        output: process.stdout
+    })
+    
+    readline.question("For sanjeev@dreamsoft4u.com - 1\n careers@dreamsoft4u.com - 2\n gaurav.s@dreamsoft4u.com - 3\n", selection => {
+        if (selection == 1) {
+            account = "me"
+        }
+        else if (selection == 2) {
+            account = "careers@dreamsoft4u.com"
+        }
+        else if (selection == 3) {
+            account = "gaurav.s@dreamsoft4u.com"
+        }
+        else {
+            console.log("Enter correct input")
+            process.exit(1)
+        }
+        console.log(account)
+        readline.close()
+    })
 }
 
 openTunnel()
@@ -63,7 +83,7 @@ app.get('/', (req, res) => {
                 // This helps make calls to user-specific endpoints instead of storing the userID
 
                 // The maximum data that can be retrieved is from T = T-30 days
-                request.get({ url: 'https://api.zoom.us/v2/users/gaurav.s@dreamsoft4u.com/recordings', qs: { from: "2021-11-15" } }, (error, response, body) => {
+                request.get({ url: `https://api.zoom.us/v2/users/${account}/recordings`, qs: { from: "2021-11-15" } }, (error, response, body) => {
                     if (error) {
                         console.log('API Response Error: ', error)
                     } else {
