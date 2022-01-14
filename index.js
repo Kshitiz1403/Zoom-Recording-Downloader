@@ -1,6 +1,24 @@
 // Bring in environment secrets through dotenv
 require('dotenv/config')
 let fs = require('fs')
+const localtunnel = require("localtunnel")
+
+let redirect_URL
+const openTunnel =async () =>{
+    const tunnel = await localtunnel({ port: 4000, subdomain:"zoomapp" });
+  
+    // the assigned public url for your tunnel
+    // i.e. https://abcdefgjhij.localtunnel.me
+    redirect_URL =  tunnel.url;
+    console.log(tunnel.url)
+  
+    tunnel.on('close', () => {
+        console.log("tunnel closed")
+      // tunnels are closed
+    });
+}
+
+openTunnel()
 
 // Use the request module to make HTTP requests from Node
 const request = require('request')
@@ -23,7 +41,7 @@ app.get('/', (req, res) => {
         // Step 3: 
         // Request an access token using the auth code
 
-        let url = 'https://zoom.us/oauth/token?grant_type=authorization_code&code=' + req.query.code + '&redirect_uri=' + process.env.redirectURL;
+        let url = 'https://zoom.us/oauth/token?grant_type=authorization_code&code=' + req.query.code + '&redirect_uri=' + redirect_URL;
 
         request.post(url, (error, response, body) => {
 
@@ -106,7 +124,7 @@ app.get('/', (req, res) => {
 
     // Step 2: 
     // If no authorization code is available, redirect to Zoom OAuth to authorize
-    res.redirect('https://zoom.us/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + process.env.redirectURL)
+    res.redirect('https://zoom.us/oauth/authorize?response_type=code&client_id=' + process.env.clientID + '&redirect_uri=' + redirect_URL)
 })
 
 app.listen(4000, () => console.log(`Zoom Recording Manager app is listening at PORT: 4000`))
