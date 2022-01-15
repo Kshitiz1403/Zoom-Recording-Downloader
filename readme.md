@@ -25,7 +25,7 @@ To use Zoom Recording Manager, run:
 
 ### Run development server
 
-    npm run start
+    npm start
 
 > A server at port 4000 will be created.
 
