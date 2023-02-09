@@ -27,16 +27,16 @@ export const getToken = async (req, res, next) => {
     const access_token = data.access_token
     const refresh_token = data.refresh_token
 
-    if (!access_token) { }
+    // if (!access_token) { }
 
 
     return res.send(`<label for="accounts">Choose an account:</label>
-    <select id="accounts" form="carform">
+    <select id="accounts" form="form">
       <option value="sanjeev@dreamsoft4u.com">sanjeev@dreamsoft4u.com</option>
       <option value="careers@dreamsoft4u.com">careers@dreamsoft4u.com</option>
       <option value="gaurav.s@dreamsoft4u.com">gaurav.s@dreamsoft4u.com</option>
     </select>
-    <form id="form">
+    <form id="form" >
          <button type="submit">Submit</button>
     </form>
     <script>
@@ -46,20 +46,22 @@ export const getToken = async (req, res, next) => {
     
     function formSubmit(e) {
       e.preventDefault()
-    
-      const formData = new FormData();
       const select = document.getElementById("accounts")
       const account = select.value
-      
+      console.log(account)
+      console.log("${access_token}")
+    
+      const formData = new FormData();
+
       formData.append('account', account)
-      formData.append('access_token', ${access_token})
-      
-      fetch("https://zoom.kshitizagrawal.in/download",{
+      formData.append('access_token', "${access_token}")
+
+      fetch("/download",{
         method: "POST",
         body: formData,
       })
-      .then(response => document.body.innerHTML="Submitted")
-      .catch(error => console.log(error))
+      .then(response => console.log(response))
+      .catch(error => console.error(error))
     }
     </script>`)
 

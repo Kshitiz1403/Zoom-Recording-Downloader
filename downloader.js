@@ -6,6 +6,9 @@ export const download = async (req, res, next) => {
     const zoomAccount = req.body.account
     const access_token = req.body.access_token;
 
+
+    console.log(zoomAccount)
+    console.log(access_token)
     if (!(zoomAccount == "careers@dreamsoft4u.com" || zoomAccount == "sanjeev@dreamsoft4u.com" || zoomAccount == "gaurav.s@dreamsoft4u.com")) {
         return res.status(400).json("Invalid account");
     }
