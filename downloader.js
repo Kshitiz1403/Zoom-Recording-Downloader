@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs'
 import util from 'util'
 import * as stream from 'stream';
+import { zip } from 'zip-a-folder';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -22,10 +23,15 @@ export const download = async (req, res, next) => {
     }).then(data => data.data['meetings'])
 
     const downloads = await downloadFiles(meetings, access_token);
+    await zipDirectory("./downloads")
     return res.status(200).json(downloads)
 }
 
 
+const zipDirectory = async(directory) =>{
+    await zip(directory, "./downloads/sanjeev.zip")
+
+}
 
 export async function downloadFiles(meetings, access_token) {
     const promises = []
