@@ -1,14 +1,14 @@
 import axios from 'axios';
 import fs from 'fs'
-import request from 'request';
+import util from 'util'
+import * as stream from 'stream';
+
+const pipeline = util.promisify(stream.pipeline);
 
 export const download = async (req, res, next) => {
     const zoomAccount = req.body.account
     const access_token = req.body.access_token;
 
-
-    console.log(zoomAccount)
-    console.log(access_token)
     if (!(zoomAccount == "careers@dreamsoft4u.com" || zoomAccount == "sanjeev@dreamsoft4u.com" || zoomAccount == "gaurav.s@dreamsoft4u.com")) {
         return res.status(400).json("Invalid account");
     }
@@ -20,38 +20,45 @@ export const download = async (req, res, next) => {
             'Authorization': `Bearer ${access_token}`
         },
     }).then(data => data.data['meetings'])
-    console.log(meetings)
 
-    return res.status(200).json(meetings)
+    const downloads = await downloadFiles(meetings, access_token);
+    return res.status(200).json(downloads)
 }
 
 
 
-export const downloadFiles = async (meetings, access_token) => {
-    let downloadStatus = {}
+export async function downloadFiles(meetings, access_token) {
+    const promises = []
+
+    const set = new Set()
     for (const meeting of meetings) {
         for (const file of meeting.recording_files) {
             let fileURL = `${file.download_url}?access_token=${access_token}`
             let fileDate = dateHandler(meeting.start_time)
             let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
-            downloadStatus = { ...downloadStatus, [fileName]: false }
+            set.add(fileName)
             let directory = "./downloads"
             if (!fs.existsSync(directory)) {
                 fs.mkdirSync(directory)
             }
-            // axios.get(fileURL)
-            request.get(fileURL)
-                .on('error', (err) => console.log(err))
-                // File has been downloaded and closed
-                .on('close', () => {
-                    downloadStatus[fileName] = true
-                    console.log(downloadStatus)
-                })
-                .pipe(fs.createWriteStream(`${directory}/${fileName}`))
+            const filePath = `${directory}/${fileName}`
+            const promise = axiosDownloadWrapper(fileURL, filePath);
+            promises.push(promise)
         }
     }
+    return await Promise.all(promises);
 }
 
+async function axiosDownloadWrapper(url, filePath) {
+    try {
+        const request = await axios.get(url, {
+            responseType: 'stream',
+        });
+        return await pipeline(request.data, fs.createWriteStream(filePath));
+    } catch (error) {
+        console.error('download pdf pipeline failed', error);
+    }
+}
 
 function dateHandler(zFormat) {
     // 2022-01-08T03:55:18Z  -> 2022-01-08-9_25_18

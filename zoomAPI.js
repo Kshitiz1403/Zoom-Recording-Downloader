@@ -64,6 +64,9 @@ export const getToken = async (req, res, next) => {
       .then(response => console.log(response))
       .catch(error => console.error(error))
     }
-    </script>`)
+    </script>
+    <footer style="position:absolute; bottom:0;">
+    <a href="https://github.com/Kshitiz1403"> Kshitiz Agrawal</a> 
+    </footer>`)
 
 }
