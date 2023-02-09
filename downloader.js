@@ -2,12 +2,12 @@ import axios from 'axios';
 import fs from 'fs'
 import * as stream from 'stream';
 import { zip } from 'zip-a-folder';
-import { db, downloadDirectory } from './server';
-import Promise from "bluebird";
+import { db, downloadDirectory } from './server.js';
+// import Promise from "bluebird";
+import util from 'util'
 import { v4 as uuid } from 'uuid';
 
-
-const pipeline = Promise.promisifyAll(stream.pipeline);
+const pipeline = util.promisify(stream.pipeline);
 
 const download = async (req, res, next) => {
     const zoomAccount = req.body.account
@@ -53,29 +53,35 @@ export async function downloadFiles(meetings, access_token) {
                 fs.mkdirSync(downloadDirectory)
             }
             const filePath = `${downloadDirectory}/${fileName}`
-            const promise = axiosDownloadWrapper(fileURL, filePath);
+            const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
         }
     }
     db.set(transactionID, JSON.stringify(obj));
-    const downloads = await Promise.all(promises);
+    const downloads = Promise.all(promises);
     const status = {};
-    console.log(downloads)
-    // downloads.map(download =>{
-
-    // })
+    downloads.then(downloads => {
+        downloads.map(download => {
+            status[download] = "downloaded"
+        })
+        db.set(transactionID, JSON.stringify(status));
+    })
+    return transactionID;
 }
 
-const getStatus = (transactionID) => {
-
+const getStatus = (req, res, next) => {
+    const transactionID = req.query.transactionID;
+    const transaction = JSON.parse(db.get(transactionID));
+    return transaction;
 }
 
-async function axiosDownloadWrapper(url, filePath) {
+async function axiosDownloadWrapper(url, filePath, fileName) {
     try {
         const request = await axios.get(url, {
             responseType: 'stream',
         });
-        return await pipeline(request.data, fs.createWriteStream(filePath));
+        const response = await pipeline(request.data, fs.createWriteStream(filePath));
+        return fileName
     } catch (error) {
         console.error('download pipeline failed', error);
     }
