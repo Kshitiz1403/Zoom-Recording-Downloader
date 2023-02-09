@@ -1,12 +1,15 @@
 import axios from 'axios';
 import fs from 'fs'
-import util from 'util'
 import * as stream from 'stream';
 import { zip } from 'zip-a-folder';
+import { db, downloadDirectory } from './server';
+import Promise from "bluebird";
+import { v4 as uuid } from 'uuid';
 
-const pipeline = util.promisify(stream.pipeline);
 
-export const download = async (req, res, next) => {
+const pipeline = Promise.promisifyAll(stream.pipeline);
+
+const download = async (req, res, next) => {
     const zoomAccount = req.body.account
     const access_token = req.body.access_token;
 
@@ -15,7 +18,7 @@ export const download = async (req, res, next) => {
     }
     const meetings = await axios.get(`https://api.zoom.us/v2/users/${zoomAccount}/recordings`, {
         params: {
-            from: "2021-11-15"
+            from: "2023-02-09"
         },
         headers: {
             'Authorization': `Bearer ${access_token}`
@@ -23,36 +26,48 @@ export const download = async (req, res, next) => {
     }).then(data => data.data['meetings'])
 
     const downloads = await downloadFiles(meetings, access_token);
-    await zipDirectory("./downloads")
+    await zipDirectory(downloadDirectory)
     return res.status(200).json(downloads)
 }
 
 
-const zipDirectory = async(directory) =>{
-    await zip(directory, "./downloads/sanjeev.zip")
+const zipDirectory = async (directory) => {
+    await zip(directory, `./${downloadDirectory}/sanjeev.zip`)
 
 }
 
 export async function downloadFiles(meetings, access_token) {
     const promises = []
 
-    const set = new Set()
+    const transactionID = uuid();
+    const obj = {};
     for (const meeting of meetings) {
         for (const file of meeting.recording_files) {
             let fileURL = `${file.download_url}?access_token=${access_token}`
+            const fileSize = file.file_size
+            console.log(fileSize)
             let fileDate = dateHandler(meeting.start_time)
             let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
-            set.add(fileName)
-            let directory = "./downloads"
-            if (!fs.existsSync(directory)) {
-                fs.mkdirSync(directory)
+            obj[fileName] = "downloading"
+            if (!fs.existsSync(downloadDirectory)) {
+                fs.mkdirSync(downloadDirectory)
             }
-            const filePath = `${directory}/${fileName}`
+            const filePath = `${downloadDirectory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath);
             promises.push(promise)
         }
     }
-    return await Promise.all(promises);
+    db.set(transactionID, JSON.stringify(obj));
+    const downloads = await Promise.all(promises);
+    const status = {};
+    console.log(downloads)
+    // downloads.map(download =>{
+
+    // })
+}
+
+const getStatus = (transactionID) => {
+
 }
 
 async function axiosDownloadWrapper(url, filePath) {
@@ -62,7 +77,7 @@ async function axiosDownloadWrapper(url, filePath) {
         });
         return await pipeline(request.data, fs.createWriteStream(filePath));
     } catch (error) {
-        console.error('download pdf pipeline failed', error);
+        console.error('download pipeline failed', error);
     }
 }
 
@@ -93,3 +108,5 @@ function dateHandler(zFormat) {
     date = onlyDate + '-' + month + '-' + year + '-' + time
     return date
 }
+
+export default download

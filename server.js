@@ -2,11 +2,13 @@ import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-d
 dotenv.config()
 import express from 'express'
 import { getToken } from './zoomAPI.js'
-import { download } from './downloader.js'
+import download from './downloader.js'
 import formData from 'express-form-data'
+import JSONdb from 'simple-json-db'
 
-
+export const db = new JSONdb("./store.json");
 export const redirect_URL = "https://zoom.kshitizagrawal.in";
+export const downloadDirectory = "./downloads"
 
 const app = express();
 
