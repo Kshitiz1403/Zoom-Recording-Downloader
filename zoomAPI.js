@@ -51,14 +51,15 @@ export const getToken = async (req, res, next) => {
       console.log(account)
       console.log("${access_token}")
     
-      const formData = new FormData();
-
-      formData.append('account', account)
-      formData.append('access_token', "${access_token}")
-
       fetch("/download",{
         method: "POST",
-        body: formData,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            account,
+            access_token:"${access_token}"
+        }),
       })
       .then(response => console.log(response))
       .catch(error => console.error(error))
