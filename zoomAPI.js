@@ -61,7 +61,7 @@ export const getToken = async (req, res, next) => {
             access_token:"${access_token}"
         }),
       })
-      .then(response => console.log(response))
+      .then(response => response.json).then(data=>console.log(data))
       .catch(error => console.error(error))
     }
     </script>

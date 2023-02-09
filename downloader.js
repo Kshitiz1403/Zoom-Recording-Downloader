@@ -26,7 +26,6 @@ const download = async (req, res, next) => {
     }).then(data => data.data['meetings'])
 
     const downloads = await downloadFiles(meetings, access_token);
-    await zipDirectory(downloadDirectory)
     return res.status(200).json(downloads)
 }
 
@@ -49,10 +48,12 @@ export async function downloadFiles(meetings, access_token) {
             let fileDate = dateHandler(meeting.start_time)
             let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
             obj[fileName] = "downloading"
-            if (!fs.existsSync(downloadDirectory)) {
-                fs.mkdirSync(downloadDirectory)
+
+            const directory = `${downloadDirectory}/${transactionID}`
+            if (!fs.existsSync(directory)) {
+                fs.mkdirSync(directory)
             }
-            const filePath = `${downloadDirectory}/${fileName}`
+            const filePath = `${directory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
         }
@@ -69,10 +70,10 @@ export async function downloadFiles(meetings, access_token) {
     return transactionID;
 }
 
-const getStatus = (req, res, next) => {
-    const transactionID = req.query.transactionID;
+export const getStatus = (req, res, next) => {
+    const transactionID = req.params.id;
     const transaction = JSON.parse(db.get(transactionID));
-    return transaction;
+    return res.status(200).send(transaction)
 }
 
 async function axiosDownloadWrapper(url, filePath, fileName) {

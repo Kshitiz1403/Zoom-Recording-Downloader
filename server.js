@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-d
 dotenv.config()
 import express from 'express'
 import { getToken } from './zoomAPI.js'
-import download from './downloader.js'
+import download, { getStatus } from './downloader.js'
 import formData from 'express-form-data'
 import JSONdb from 'simple-json-db'
 
@@ -20,5 +20,7 @@ app.use(formData.format());
 app.get('/', getToken);
 
 app.post('/download', download);
+
+app.get('/status/:id', getStatus)
 
 app.listen('7229', () => console.log("Server listening on 7229"));
