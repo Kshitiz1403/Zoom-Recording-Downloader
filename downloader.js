@@ -1,18 +1,30 @@
+import axios from 'axios';
 import fs from 'fs'
 import request from 'request';
 
 export const download = async (req, res, next) => {
-    const zoomAccount = req.query.account;
+    const zoomAccount = req.body.account
+    const access_token = req.body.access_token;
+
     if (!(zoomAccount == "careers@dreamsoft4u.com" || zoomAccount == "sanjeev@dreamsoft4u.com" || zoomAccount == "gaurav.s@dreamsoft4u.com")) {
         return res.status(400).json("Invalid account");
     }
-    return res.status(200).json("Accepted")
+    const meetings = await axios.get(`https://api.zoom.us/v2/users/${zoomAccount}/recordings`, {
+        params: {
+            from: "2021-11-15"
+        },
+        headers: {
+            'Authorization': `Bearer ${access_token}`
+        },
+    }).then(data => data.data['meetings'])
+    console.log(meetings)
+
+    return res.status(200).json(meetings)
 }
 
 
 
-export const downloadFiles = async (data, access_token) => {
-    const meetings = data["meetings"]
+export const downloadFiles = async (meetings, access_token) => {
     let downloadStatus = {}
     for (const meeting of meetings) {
         for (const file of meeting.recording_files) {
@@ -24,6 +36,7 @@ export const downloadFiles = async (data, access_token) => {
             if (!fs.existsSync(directory)) {
                 fs.mkdirSync(directory)
             }
+            // axios.get(fileURL)
             request.get(fileURL)
                 .on('error', (err) => console.log(err))
                 // File has been downloaded and closed
