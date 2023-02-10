@@ -1,9 +1,7 @@
 import axios from 'axios';
 import fs from 'fs'
 import * as stream from 'stream';
-import { zip } from 'zip-a-folder';
 import { db, downloadDirectory } from './server.js';
-// import Promise from "bluebird";
 import util from 'util'
 import { v4 as uuid } from 'uuid';
 
@@ -30,16 +28,12 @@ const download = async (req, res, next) => {
 }
 
 
-const zipDirectory = async (directory) => {
-    await zip(directory, `./${downloadDirectory}/sanjeev.zip`)
-
-}
 
 export async function downloadFiles(meetings, access_token) {
     const promises = []
 
     const transactionID = uuid();
-    const arr = [];
+    const obj = {};
     for (const meeting of meetings) {
         for (const file of meeting.recording_files) {
             let fileURL = `${file.download_url}?access_token=${access_token}`
@@ -47,7 +41,6 @@ export async function downloadFiles(meetings, access_token) {
             console.log(fileSize)
             let fileDate = dateHandler(meeting.start_time)
             let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
-            const obj = {};
             obj[fileName] = "downloading"
 
             const directory = `${downloadDirectory}/${transactionID}`
@@ -57,10 +50,9 @@ export async function downloadFiles(meetings, access_token) {
             const filePath = `${directory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
-            arr.push(obj)
         }
-    }
-    db.set(transactionID, JSON.stringify(arr));
+    } 
+    db.set(transactionID, JSON.stringify(obj));
     const downloads = Promise.all(promises);
     const status = {};
     downloads.then(downloads => {
@@ -76,6 +68,16 @@ export const getStatus = (req, res, next) => {
     const transactionID = req.params.id;
     const transaction = JSON.parse(db.get(transactionID));
     return res.status(200).send(transaction)
+}
+
+export const getFilesForId = (req, res, next) => {
+    const transactionID = req.params.id;
+    const arr = []
+    fs.readdirSync(downloadDirectory + `/${transactionID}`).forEach(file => {
+        arr.push(`https://zoom.kshitizagrawal.in/${transactionID}/${file}`)
+        console.log(file)
+    })
+    return res.status(200).json(arr)
 }
 
 async function axiosDownloadWrapper(url, filePath, fileName) {
