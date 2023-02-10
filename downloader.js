@@ -4,6 +4,7 @@ import * as stream from 'stream';
 import { db, downloadDirectory } from './server.js';
 import util from 'util'
 import { v4 as uuid } from 'uuid';
+import { zip } from 'zip-a-folder';
 
 const pipeline = util.promisify(stream.pipeline);
 
@@ -51,7 +52,7 @@ export async function downloadFiles(meetings, access_token) {
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
         }
-    } 
+    }
     db.set(transactionID, JSON.stringify(obj));
     const downloads = Promise.all(promises);
     const status = {};
@@ -70,14 +71,12 @@ export const getStatus = (req, res, next) => {
     return res.status(200).send(transaction)
 }
 
-export const getFilesForId = (req, res, next) => {
+export const getFilesForId = async (req, res, next) => {
     const transactionID = req.params.id;
     const arr = []
-    fs.readdirSync(downloadDirectory + `/${transactionID}`).forEach(file => {
-        arr.push(`https://zoom.kshitizagrawal.in/${transactionID}/${file}`)
-        console.log(file)
-    })
-    return res.status(200).json(arr)
+    await zip(downloadDirectory + `/${transactionID}`, `./zips/${transactionID}.zip`);
+    res.download(`./zips/${transactionID}.zip`)
+    return res.end()
 }
 
 async function axiosDownloadWrapper(url, filePath, fileName) {
