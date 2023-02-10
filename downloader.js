@@ -39,7 +39,7 @@ export async function downloadFiles(meetings, access_token) {
     const promises = []
 
     const transactionID = uuid();
-    const obj = {};
+    const arr = [];
     for (const meeting of meetings) {
         for (const file of meeting.recording_files) {
             let fileURL = `${file.download_url}?access_token=${access_token}`
@@ -47,6 +47,7 @@ export async function downloadFiles(meetings, access_token) {
             console.log(fileSize)
             let fileDate = dateHandler(meeting.start_time)
             let fileName = `${meeting.topic} ${fileDate}.${file.file_extension}`
+            const obj = {};
             obj[fileName] = "downloading"
 
             const directory = `${downloadDirectory}/${transactionID}`
@@ -56,9 +57,10 @@ export async function downloadFiles(meetings, access_token) {
             const filePath = `${directory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
+            arr.push(obj)
         }
     }
-    db.set(transactionID, JSON.stringify(obj));
+    db.set(transactionID, JSON.stringify(arr));
     const downloads = Promise.all(promises);
     const status = {};
     downloads.then(downloads => {

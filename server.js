@@ -21,6 +21,6 @@ app.get('/', getToken);
 
 app.post('/download', download);
 
-app.get('/status/:id', getStatus)
+app.get('/api/status/:id', getStatus)
 
 app.listen('7229', () => console.log("Server listening on 7229"));
