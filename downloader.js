@@ -45,6 +45,9 @@ export async function downloadFiles(meetings, access_token) {
             obj[fileName] = "downloading"
 
             const directory = `${downloadDirectory}/${transactionID}`
+            if (!fs.existsSync(directory)) {
+                fs.mkdirSync(directory)
+            }
             const filePath = `${directory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)

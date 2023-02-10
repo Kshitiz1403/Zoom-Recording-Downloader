@@ -12,8 +12,6 @@ export const redirect_URL = "https://zoom.kshitizagrawal.in";
 export const downloadDirectory = "./downloads"
 export const zipsDirectory = "./zips"
 
-if (!fs.existsSync(directory)) fs.mkdirSync(directory)
-
 if (!fs.existsSync(zipsDirectory)) fs.mkdirSync(zipsDirectory)
 
 const app = express();
