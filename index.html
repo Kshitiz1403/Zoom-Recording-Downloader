@@ -1,0 +1,57 @@
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+      monospace;
+  }
+</style>
+<div style=" background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 1vmin);
+    color: white;">
+
+  <h1 id="heading">Transaction ID</h1>
+  <div id="container">
+
+  </div>
+  <button type="submit" onclick="downloadAll()">Download all</button>
+
+</div>
+<script>
+  let transactionID = window.location.href.split("/").slice(-1).pop();
+  document.getElementById("heading").textContent = `Transaction ID ${transactionID}`
+  const getStatus = async () => {
+    console.log(transactionID)
+    const data = await fetch(`https://zoom.kshitizagrawal.in/api/status/${transactionID}`).then(response => response.json())
+    const container = document.getElementById("container")
+    Object.keys(data).map(record => {
+      let html = `<div style="display:flex; justify-content:space-between">
+           <div style="margin-right:20px;">${record}</div>
+           <div>${data[record]}</div>
+           </div>`
+      container.innerHTML += html
+    })
+  }
+
+  const downloadAll = async () => {
+    const url = await fetch(`https://zoom.kshitizagrawal.in/download/${transactionID}`).then(response => response.json());
+    const a = document.createElement("a");
+    a.href = url
+    a.download = url;
+    a.click();
+  }
+
+  getStatus()
+</script>

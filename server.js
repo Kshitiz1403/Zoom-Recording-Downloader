@@ -6,6 +6,7 @@ import download, { getFilesForId, getStatus } from './downloader.js'
 import JSONdb from 'simple-json-db'
 import cors from 'cors'
 import fs from 'fs'
+import path from 'path'
 
 export const db = new JSONdb("./store.json");
 export const redirect_URL = "https://zoom.kshitizagrawal.in";
@@ -23,7 +24,9 @@ app.use(cors())
 
 app.use(express.static(zipsDirectory))
 
-app.use('/status', express.static('./client/build'))
+const __dirname = path.resolve()
+
+app.get('/status/*', (req, res) => res.sendFile(path.join(__dirname, "index.html")))
 
 app.get('/', getToken);
 
