@@ -45,9 +45,6 @@ export async function downloadFiles(meetings, access_token) {
             obj[fileName] = "downloading"
 
             const directory = `${downloadDirectory}/${transactionID}`
-            if (!fs.existsSync(directory)) {
-                fs.mkdirSync(directory)
-            }
             const filePath = `${directory}/${fileName}`
             const promise = axiosDownloadWrapper(fileURL, filePath, fileName);
             promises.push(promise)
@@ -56,10 +53,11 @@ export async function downloadFiles(meetings, access_token) {
     db.set(transactionID, JSON.stringify(obj));
     const downloads = Promise.all(promises);
     const status = {};
-    downloads.then(downloads => {
+    downloads.then(async downloads => {
         downloads.map(download => {
             status[download] = "downloaded"
         })
+        await zip(downloadDirectory + `/${transactionID}`, `./zips/${transactionID}.zip`);
         db.set(transactionID, JSON.stringify(status));
     })
     return transactionID;
@@ -73,10 +71,7 @@ export const getStatus = (req, res, next) => {
 
 export const getFilesForId = async (req, res, next) => {
     const transactionID = req.params.id;
-    const arr = []
-    await zip(downloadDirectory + `/${transactionID}`, `./zips/${transactionID}.zip`);
-    res.download(`./zips/${transactionID}.zip`)
-    return res.end()
+    return res.status(200).json(`https://zoom.kshitizagrawal.in/${transactionID}.zip`)
 }
 
 async function axiosDownloadWrapper(url, filePath, fileName) {

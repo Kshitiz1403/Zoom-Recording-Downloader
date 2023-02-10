@@ -5,10 +5,16 @@ import { getToken } from './zoomAPI.js'
 import download, { getFilesForId, getStatus } from './downloader.js'
 import JSONdb from 'simple-json-db'
 import cors from 'cors'
+import fs from 'fs'
 
 export const db = new JSONdb("./store.json");
 export const redirect_URL = "https://zoom.kshitizagrawal.in";
 export const downloadDirectory = "./downloads"
+export const zipsDirectory = "./zips"
+
+if (!fs.existsSync(directory)) fs.mkdirSync(directory)
+
+if (!fs.existsSync(zipsDirectory)) fs.mkdirSync(zipsDirectory)
 
 const app = express();
 
@@ -16,7 +22,7 @@ app.use(express.json()) // for json
 app.use(express.urlencoded({ extended: true })) // for form data
 app.use(cors())
 
-app.use(express.static(downloadDirectory))
+app.use(express.static(zipsDirectory))
 
 
 app.get('/', getToken);
