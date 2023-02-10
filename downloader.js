@@ -17,7 +17,7 @@ const download = async (req, res, next) => {
     }
     const meetings = await axios.get(`https://api.zoom.us/v2/users/${zoomAccount}/recordings`, {
         params: {
-            from: "2023-02-07"
+            from: "2022-02-07"
         },
         headers: {
             'Authorization': `Bearer ${access_token}`

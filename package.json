@@ -1,6 +1,6 @@
 {
   "name": "zoom-recording-manager",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "App for downloading the cloud recordings on Zoom using Oauth2 Client ID and Secret to create an OAuth2 token used to call the Zoom API.",
   "main": "index.js",
   "scripts": {

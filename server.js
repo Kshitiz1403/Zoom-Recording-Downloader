@@ -23,6 +23,7 @@ app.use(cors())
 
 app.use(express.static(zipsDirectory))
 
+app.use('/status', express.static('./client/build'))
 
 app.get('/', getToken);
 
