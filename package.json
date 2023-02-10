@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "author": "Kshitiz Agrawal",
   "license": "ISC",
@@ -18,8 +18,5 @@
     "uuid": "^9.0.0",
     "zip-a-folder": "^1.1.5"
   },
-  "type": "module",
-  "devDependencies": {
-    "nodemon": "^2.0.2"
-  }
+  "type": "module"
 }
