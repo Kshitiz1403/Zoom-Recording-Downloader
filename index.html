@@ -23,6 +23,7 @@
     color: white;">
 
   <h1 id="heading">Transaction ID</h1>
+  <button type="none" onclick="reload()"></button>
   <div id="container">
 
   </div>
@@ -44,6 +45,8 @@
       container.innerHTML += html
     })
   }
+
+  const reload = () => location.reload()
 
   const downloadAll = async () => {
     const url = await fetch(`https://zoom.kshitizagrawal.in/download/${transactionID}`).then(response => response.json());
