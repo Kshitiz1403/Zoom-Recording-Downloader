@@ -15,7 +15,7 @@ const s3Client = new S3({
  }
 });
 
-const BUCKET_NAME = "zoom-downloads"
+const BUCKET_NAME = "zoom-downloads-2"
 
 
 const uploadToS3 = async (filePath, transactionID) => {
