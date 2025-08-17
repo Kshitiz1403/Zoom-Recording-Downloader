@@ -37,7 +37,17 @@ Copy the following to the file and add values from the OAuth app
 ```
 clientID=
 clientSecret=
+POSTMARK_API_KEY=your-postmark-server-api-token-here
 ```
+
+### Email Notifications
+
+The app uses Postmark to send email notifications when downloads are ready. To enable email notifications:
+
+1. Sign up for a Postmark account at https://postmarkapp.com/
+2. Create a server and get your Server API Token
+3. Add the API token to your `.env` file as `POSTMARK_API_KEY`
+4. Verify your sender signature in Postmark for the email address used in the app
 
 ### Add credentials to the Zoom Marketplace 
 
