@@ -9,6 +9,6 @@ services:
       - .env
     volumes:
       - ./store.json:/app/store.json
-      - ./downloads:/app/downloads
-      - ./zips:/app/zips
+      - ${DOWNLOADS_DIR}:/app/downloads
+      - ${ZIPS_DIR}:/app/zips
     restart: unless-stopped
