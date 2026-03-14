@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: go-server/Dockerfile
+    ports:
+      - "7229:7229"
+    env_file:
+      - .env
+    volumes:
+      - ./store.json:/app/store.json
+      - ./downloads:/app/downloads
+      - ./zips:/app/zips
+    restart: unless-stopped
