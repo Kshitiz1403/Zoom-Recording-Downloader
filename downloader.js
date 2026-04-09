@@ -6,7 +6,7 @@ import util from 'util'
 import { v4 as uuid } from 'uuid';
 import { zip } from 'zip-a-folder';
 import { sendEmail } from './send-email.js';
-import { generatePresignedURL, uploadToS3 } from './upload-to-s3.js';
+import { generatePresignedURL, uploadToAzure } from './upload-to-azure.js';
 
 
 const pipeline = util.promisify(stream.pipeline);
@@ -74,7 +74,7 @@ export async function downloadFiles(meetings, access_token, zoomAccount) {
 
         fs.rmSync(transactionDownloadDir, { recursive: true, force: true }); // Removes the downloaded transaction once the zip is successfully created.
 
-        await uploadToS3(zipPath, transactionID);
+        await uploadToAzure(zipPath, transactionID);
 
         const presignedURL = await generatePresignedURL(transactionID, 7);
 
