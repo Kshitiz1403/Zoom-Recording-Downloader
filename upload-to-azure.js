@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
+import { webcrypto } from 'crypto'
+if (!globalThis.crypto) globalThis.crypto = webcrypto
 import { BlobServiceClient, StorageSharedKeyCredential, generateBlobSASQueryParameters, BlobSASPermissions } from '@azure/storage-blob'
 import fs from 'fs'
 
