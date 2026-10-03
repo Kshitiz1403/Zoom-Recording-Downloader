@@ -27,6 +27,19 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
+  cleanup:
+    # Replaces the host crontab: removes leftover downloads and zips every 8 hours.
+    build: .
+    command: ["sh", "-c", "while true; do node cleanup.cjs; sleep 28800; done"]
+    init: true # lets `docker compose down` stop the sleep loop immediately
+    environment:
+      DOWNLOADS_DIR: /app/downloads
+      ZIPS_DIR: /app/zips
+    volumes:
+      - ${DOWNLOADS_DIR:?missing in .env}:/app/downloads
+      - ${ZIPS_DIR:?missing in .env}:/app/zips
+    restart: unless-stopped
+
   minio:
     # Upstream MinIO stopped publishing images in Oct 2025; pgsty/minio is the maintained fork.
     image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
