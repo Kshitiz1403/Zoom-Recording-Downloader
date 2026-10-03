@@ -8,7 +8,7 @@ import cors from 'cors'
 import fs from 'fs'
 import path from 'path'
 
-const _db = new Database('./store.db');
+const _db = new Database(process.env.DB_PATH || './store.db');
 _db.exec(`
   CREATE TABLE IF NOT EXISTS transactions (
     id         TEXT PRIMARY KEY,

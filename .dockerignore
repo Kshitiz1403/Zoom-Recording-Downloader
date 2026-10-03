@@ -1,0 +1,13 @@
+.git
+.env
+node_modules
+downloads
+zips
+data
+store.db
+store.json
+go-server
+.specstory
+.claude
+.zed
+.DS_Store

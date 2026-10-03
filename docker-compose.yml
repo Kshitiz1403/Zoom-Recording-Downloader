@@ -1,14 +1,63 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: go-server/Dockerfile
+  zoom:
+    build: .
     ports:
       - "7229:7229"
-    env_file:
-      - .env
+    environment:
+      clientID: ${clientID:?missing in .env}
+      clientSecret: ${clientSecret:?missing in .env}
+      POSTMARK_API_KEY: ${POSTMARK_API_KEY:?missing in .env}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?missing in .env}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?missing in .env}
+      S3_BUCKET: ${S3_BUCKET:?missing in .env}
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:?missing in .env}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      # These describe the container's own layout, so they are fixed here. In .env, DOWNLOADS_DIR and
+      # ZIPS_DIR are the host paths mounted below.
+      S3_ENDPOINT: http://minio:9000
+      DOWNLOADS_DIR: /app/downloads
+      ZIPS_DIR: /app/zips
+      DB_PATH: /app/data/store.db
     volumes:
-      - ./store.json:/app/store.json
-      - ${DOWNLOADS_DIR}:/app/downloads
-      - ${ZIPS_DIR}:/app/zips
+      - ${DOWNLOADS_DIR:?missing in .env}:/app/downloads
+      - ${ZIPS_DIR:?missing in .env}:/app/zips
+      - ./data:/app/data
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
     restart: unless-stopped
+
+  minio:
+    # Upstream MinIO stopped publishing images in Oct 2025; pgsty/minio is the maintained fork.
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?missing in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?missing in .env}
+    volumes:
+      - ${MINIO_DATA_DIR:-/mnt/data}:/data
+    ports:
+      - "127.0.0.1:9000:9000" # S3 API; the reverse proxy serves it at S3_PUBLIC_ENDPOINT
+      - "127.0.0.1:9001:9001" # Web console; reach it over an SSH tunnel
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  minio-init:
+    # Same image as minio, used only for its bundled mc client.
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    entrypoint: ["sh", "/minio-init.sh"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?missing in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?missing in .env}
+      S3_BUCKET: ${S3_BUCKET:?missing in .env}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:?missing in .env}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:?missing in .env}
+    volumes:
+      - ./minio-init.sh:/minio-init.sh:ro
+    depends_on:
+      minio:
+        condition: service_healthy
