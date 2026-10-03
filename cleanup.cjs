@@ -1,8 +1,9 @@
+require('dotenv').config()
 const fs = require('fs')
 const path = require('path')
 
-const DOWNLOADS_DIRECTORY = "./downloads"
-const ZIPS_DIRECTORY = "./zips";
+const DOWNLOADS_DIRECTORY = process.env.DOWNLOADS_DIR || "./downloads"
+const ZIPS_DIRECTORY = process.env.ZIPS_DIR || "./zips";
 
 const NOW = new Date();
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import fs from 'fs'
 import * as stream from 'stream';
-import { db, downloadDirectory } from './server.js';
+import { db, downloadDirectory, zipsDirectory } from './server.js';
 import util from 'util'
 import { v4 as uuid } from 'uuid';
 import { zip } from 'zip-a-folder';
@@ -67,7 +67,7 @@ export async function downloadFiles(meetings, access_token, zoomAccount) {
         downloaded.map(download => status[download] = "downloaded")
 
         const transactionDownloadDir = downloadDirectory + `/${transactionID}`
-        const zipPath = `./zips/${transactionID}.zip`
+        const zipPath = `${zipsDirectory}/${transactionID}.zip`
 
         await zip(transactionDownloadDir, zipPath);
         db.set(transactionID, JSON.stringify(status));

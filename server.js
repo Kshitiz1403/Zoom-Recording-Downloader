@@ -34,11 +34,11 @@ export const db = {
   }
 };
 export const redirect_URL = "https://zoom.kshitizagrawal.in";
-export const downloadDirectory = "./downloads"
-export const zipsDirectory = "./zips"
+export const downloadDirectory = process.env.DOWNLOADS_DIR || "./downloads"
+export const zipsDirectory = process.env.ZIPS_DIR || "./zips"
 
-if (!fs.existsSync(downloadDirectory)) fs.mkdirSync(downloadDirectory)
-if (!fs.existsSync(zipsDirectory)) fs.mkdirSync(zipsDirectory)
+if (!fs.existsSync(downloadDirectory)) fs.mkdirSync(downloadDirectory, { recursive: true })
+if (!fs.existsSync(zipsDirectory)) fs.mkdirSync(zipsDirectory, { recursive: true })
 
 const app = express();
 
